@@ -24,14 +24,13 @@ func main() {
 		for _, match := range re.FindAllStringSubmatch(strings.TrimSpace(s.Text()), -1) {
 			n, _ := strconv.Atoi(match[1])
 			color := match[2]
-			fmt.Println(color)
-			switch {
-			case color == "red" && g.red < n:
-				g.red = n
-			case color == "green" && g.green < n:
-				g.green = n
-			case color == "blue" && g.blue < n:
-				g.blue = n
+			switch color {
+			case "red":
+				g.red = max(g.red, n)
+			case "green":
+				g.green = max(g.green, n)
+			case "blue":
+				g.blue = max(g.blue, n)
 			}
 		}
 		if g.red <= 12 && g.green <= 13 && g.blue <= 14 {
