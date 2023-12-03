@@ -41,40 +41,29 @@ func main() {
 
 	// part 1
 	{
-		sum := 0
-		for numCoord, num := range nums {
-			for symCoord := range syms {
-				if numCoord.adjacent(len(fmt.Sprintf("%d", num)), symCoord) {
-					sum += num
-				}
-			}
-		}
-		fmt.Printf("[1] Result: %d\n", sum)
-	}
-
-	// part 2
-	{
-		sum := 0
+		sum1 := 0
+		sum2 := 0
 		for symCoord, sym := range syms {
-			if sym != "*" {
-				continue
-			}
-			var firstNum int
+			var prev int
 			for numCoord, num := range nums {
 				if !numCoord.adjacent(len(fmt.Sprintf("%d", num)), symCoord) {
 					continue
 				}
-				if firstNum == 0 {
-					firstNum = num
+				sum1 += num
+				if sym != "*" {
 					continue
 				}
-				sum += firstNum * num
+				if prev == 0 {
+					prev = num
+					continue
+				}
+				sum2 += prev * num
 			}
-			firstNum = 0
+			prev = 0
 		}
-		fmt.Printf("[2] Result: %d\n", sum)
+		fmt.Printf("[1] Result: %d\n", sum1)
+		fmt.Printf("[2] Result: %d\n", sum2)
 	}
-
 }
 
 func (c *coordinate) adjacent(n int, other coordinate) bool {
