@@ -12,16 +12,7 @@ type coordinate struct {
 	x, y int
 }
 
-var adj = []coordinate{
-	{x: -1, y: -1},
-	{x: -1, y: 0},
-	{x: -1, y: 1},
-	{x: 0, y: 1},
-	{x: 0, y: -1},
-	{x: 1, y: 1},
-	{x: 1, y: 0},
-	{x: 1, y: -1},
-}
+var adj = []coordinate{{-1, -1}, {-1, 0}, {-1, 1}, {0, 1}, {0, -1}, {1, 1}, {1, 0}, {1, -1}}
 
 func main() {
 
@@ -34,21 +25,22 @@ func main() {
 	nums := make(map[coordinate]int)
 	syms := make(map[coordinate]string)
 
+	for y, line := range lines {
+		matches := numRe.FindAllString(line, -1)
+		for _, s := range matches {
+			n, _ := strconv.Atoi(s)
+			nums[coordinate{x: strings.Index(line, s), y: y}] = n
+			line = strings.Replace(line, s, strings.Repeat(".", len(s)), 1)
+		}
+		matches = symRe.FindAllString(line, -1)
+		for _, s := range matches {
+			syms[coordinate{x: strings.Index(line, s), y: y}] = s
+			line = strings.Replace(line, s, strings.Repeat(".", len(s)), 1)
+		}
+	}
+
 	// part 1
 	{
-		for y, line := range lines {
-			matches := numRe.FindAllString(line, -1)
-			for _, s := range matches {
-				n, _ := strconv.Atoi(s)
-				nums[coordinate{x: strings.Index(line, s), y: y}] = n
-				line = strings.Replace(line, s, strings.Repeat(".", len(s)), 1)
-			}
-			matches = symRe.FindAllString(line, -1)
-			for _, s := range matches {
-				syms[coordinate{x: strings.Index(line, s), y: y}] = s
-				line = strings.Replace(line, s, strings.Repeat(".", len(s)), 1)
-			}
-		}
 		sum := 0
 		for numCoord, num := range nums {
 			for symCoord := range syms {
