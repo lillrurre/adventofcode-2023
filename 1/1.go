@@ -12,8 +12,7 @@ func main() {
 	input := string(b)
 
 	firstLast := func(line string) (first rune, last rune) {
-		runes := []rune(line)
-		for _, r := range runes {
+		for _, r := range line {
 			if r >= '0' && r <= '9' {
 				if first == 0 {
 					first = r
