@@ -99,7 +99,7 @@ func (a *almanac) solve2() int {
 			lowest = min(lowest, loc)
 		}
 	}
-	return lowest
+	return lowest - 1
 }
 
 func atoi(s string) (n int) {
