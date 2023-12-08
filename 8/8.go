@@ -39,8 +39,8 @@ func main() {
 		network[matches[1]] = [2]string{matches[2], matches[3]}
 	}
 
-	fmt.Println(part1(directions, network, "AAA", "ZZZ"))
-	fmt.Println(part2(directions, network))
+	fmt.Printf("[1] Result: %d\n", part1(directions, network, "AAA", "ZZZ"))
+	fmt.Printf("[2] Result: %d\n", part2(directions, network))
 }
 
 func part1(directions []int, network map[string][2]string, current string, targets ...string) (moves int) {
