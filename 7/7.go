@@ -44,21 +44,18 @@ func main() {
 		gamesPart2 = append(gamesPart2, &game{cards: cards, bid: bid, hand: h})
 	}
 
-	solve := func(games []*game, valueMap map[rune]int) int {
+	solve := func(games []*game, valueMap map[rune]int) (sum int) {
 		slices.SortFunc(games, func(a, b *game) int {
 			if a.hand != b.hand {
 				return int(a.hand - b.hand)
 			}
 			for i, card := range a.cards {
-				if card == rune(b.cards[i]) {
-					continue
+				if card != rune(b.cards[i]) {
+					return valueMap[card] - valueMap[rune(b.cards[i])]
 				}
-				return valueMap[card] - valueMap[rune(b.cards[i])]
 			}
 			return 1
 		})
-
-		sum := 0
 		for rank, g := range games {
 			sum += (rank + 1) * g.bid
 		}
@@ -68,8 +65,8 @@ func main() {
 	var cardValueMap = map[rune]int{'2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, 'T': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14}
 	fmt.Printf("[1] Result: %d\n", solve(gamesPart1, cardValueMap))
 
-	var jokerCardValueMap = map[rune]int{'2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, 'T': 10, 'J': 0, 'Q': 12, 'K': 13, 'A': 14}
-	fmt.Printf("[2] Result: %d\n", solve(gamesPart2, jokerCardValueMap))
+	cardValueMap['J'] = 1
+	fmt.Printf("[2] Result: %d\n", solve(gamesPart2, cardValueMap))
 }
 
 func getCardMap(cards string, part2 bool) (cardMap map[int]int, jokers int) {
@@ -85,8 +82,7 @@ func getCardMap(cards string, part2 bool) (cardMap map[int]int, jokers int) {
 }
 
 func getBestHand(cardMap map[int]int, jokers int) hand {
-	// Early returns from the simple cases
-	for _, amount := range cardMap {
+	for card, amount := range cardMap {
 		switch {
 		case amount == 5:
 			return FiveOfAKind
@@ -102,12 +98,7 @@ func getBestHand(cardMap map[int]int, jokers int) hand {
 			return FiveOfAKind
 		case amount == 2 && jokers == 2:
 			return FourOfAKind
-		}
-	}
 
-	// Cases with combination
-	for card, amount := range cardMap {
-		switch {
 		case amount == 3:
 			for otherCard, otherAmount := range cardMap {
 				switch {
@@ -118,6 +109,7 @@ func getBestHand(cardMap map[int]int, jokers int) hand {
 				}
 			}
 			return ThreeOfAKind
+
 		case amount == 2:
 			for otherCard, otherAmount := range cardMap {
 				switch {
@@ -139,7 +131,6 @@ func getBestHand(cardMap map[int]int, jokers int) hand {
 		}
 	}
 
-	// No combination found - check if the jokers make some pair or return the highest card as the hand
 	switch jokers {
 	case 4, 5:
 		return FiveOfAKind
