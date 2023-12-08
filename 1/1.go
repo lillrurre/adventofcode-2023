@@ -1,15 +1,12 @@
 package main
 
 import (
-	"fmt"
-	"os"
-	"strconv"
+	"github.com/lillrurre/adventofcode-2023/util"
 	"strings"
 )
 
 func main() {
-	b, _ := os.ReadFile("input/1")
-	input := string(b)
+	input := util.FileAsString(1)
 
 	firstLast := func(line string) (first rune, last rune) {
 		for _, r := range line {
@@ -23,17 +20,18 @@ func main() {
 		return first, last
 	}
 
-	solve := func(part int) {
+	solve := func() int {
 		var sum int
 		for _, line := range strings.Split(input, "\n") {
 			f, l := firstLast(line)
-			val, _ := strconv.Atoi(fmt.Sprintf("%s%s", string(f), string(l)))
-			sum += val
+			sum += util.ValuesToNum(f, l)
 		}
-		fmt.Printf("[%d] Result: %d\n", part, sum)
+		return sum
 	}
 
-	solve(1)
+	util.Run(1, func() any {
+		return solve()
+	})
 
 	input = strings.ReplaceAll(input, "one", "o1e")
 	input = strings.ReplaceAll(input, "two", "t2o")
@@ -45,5 +43,8 @@ func main() {
 	input = strings.ReplaceAll(input, "eight", "e8t")
 	input = strings.ReplaceAll(input, "nine", "n9e")
 
-	solve(2)
+	util.Run(2, func() any {
+		return solve()
+	})
+
 }

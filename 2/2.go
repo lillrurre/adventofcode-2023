@@ -1,11 +1,9 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"os"
+	"github.com/lillrurre/adventofcode-2023/util"
 	"regexp"
-	"strconv"
 	"strings"
 )
 
@@ -14,15 +12,14 @@ type game struct {
 }
 
 func main() {
-	f, _ := os.Open("input/2")
-	s := bufio.NewScanner(f)
+	s := util.FileAsScanner(2)
 	re := regexp.MustCompile(`(\d+) (\w+)`)
 
 	gameNum, part1, part2 := 1, 0, 0
 	for s.Scan() {
 		g := new(game)
 		for _, match := range re.FindAllStringSubmatch(strings.TrimSpace(s.Text()), -1) {
-			n, _ := strconv.Atoi(match[1])
+			n := util.Atoi(match[1])
 			color := match[2]
 			switch color {
 			case "red":

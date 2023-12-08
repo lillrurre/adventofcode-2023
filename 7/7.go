@@ -1,10 +1,8 @@
 package main
 
 import (
-	"fmt"
-	"os"
+	"github.com/lillrurre/adventofcode-2023/util"
 	"slices"
-	"strconv"
 	"strings"
 )
 
@@ -27,13 +25,12 @@ const (
 )
 
 func main() {
-	b, _ := os.ReadFile("input/7")
-	input := strings.Split(string(b), "\n")
+	input := util.FileAsStringArr(7, "\n")
 
 	gamesPart1, gamesPart2 := make([]*game, 0), make([]*game, 0)
 	for _, line := range input {
 		fields := strings.Fields(line)
-		cards, bid := fields[0], atoi(fields[1])
+		cards, bid := fields[0], util.Atoi(fields[1])
 
 		cardMap, jokers := getCardMap(cards, false)
 		h := getBestHand(cardMap, jokers)
@@ -63,10 +60,16 @@ func main() {
 	}
 
 	var cardValueMap = map[rune]int{'2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, 'T': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14}
-	fmt.Printf("[1] Result: %d\n", solve(gamesPart1, cardValueMap))
+
+	util.Run(1, func() any {
+		return solve(gamesPart1, cardValueMap)
+	})
 
 	cardValueMap['J'] = 1
-	fmt.Printf("[2] Result: %d\n", solve(gamesPart2, cardValueMap))
+	util.Run(2, func() any {
+		return solve(gamesPart2, cardValueMap)
+	})
+
 }
 
 func getCardMap(cards string, part2 bool) (cardMap map[int]int, jokers int) {
@@ -143,9 +146,4 @@ func getBestHand(cardMap map[int]int, jokers int) hand {
 	default:
 		return HighCard
 	}
-}
-
-func atoi(s string) (n int) {
-	n, _ = strconv.Atoi(s)
-	return
 }

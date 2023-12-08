@@ -1,10 +1,8 @@
 package main
 
 import (
-	"fmt"
-	"os"
+	"github.com/lillrurre/adventofcode-2023/util"
 	"regexp"
-	"strconv"
 	"strings"
 )
 
@@ -20,8 +18,7 @@ type almanac struct {
 }
 
 func main() {
-	b, _ := os.ReadFile("input/5")
-	input := strings.Split(string(b), "\n\n")
+	input := util.FileAsStringArr(5, "\n\n")
 
 	// part 1
 	{
@@ -30,7 +27,9 @@ func main() {
 		for i, in := range input[1:] {
 			a.positions[i] = parse(in)
 		}
-		fmt.Printf("[1] Result: %d\n", a.solve1())
+		util.Run(1, func() any {
+			return a.solve1()
+		})
 	}
 
 	// part 2
@@ -40,28 +39,23 @@ func main() {
 		for i, in := range input[1:] {
 			a.positions[i] = parse(in)
 		}
-		fmt.Printf("[2] Result: %d\n", a.solve2())
+		util.Run(2, func() any {
+			return a.solve2()
+		})
 	}
 }
 
 func parseSeeds(seeds string) (s []int) {
-	for _, match := range regexp.MustCompile(`\d+`).FindAllString(seeds, -1) {
-		s = append(s, atoi(match))
-	}
-	return s
+	return util.StrsToIntSlice(regexp.MustCompile(`\d+`).FindAllString(seeds, -1)...)
 }
 
 func parse(m string) (p positions) {
 	for _, line := range strings.Split(m, "\n") {
-		matches := regexp.MustCompile(`\d+`).FindAllString(line, -1)
-		if len(matches) != 3 {
+		values := util.StrsToIntSlice(regexp.MustCompile(`\d+`).FindAllString(line, -1)...)
+		if len(values) != 3 {
 			continue
 		}
-		p = append(p, position{
-			dest: atoi(matches[0]),
-			src:  atoi(matches[1]),
-			rng:  atoi(matches[2]),
-		})
+		p = append(p, position{dest: values[0], src: values[1], rng: values[2]})
 	}
 	return p
 }
@@ -100,9 +94,4 @@ func (a *almanac) solve2() int {
 		}
 	}
 	return lowest - 1
-}
-
-func atoi(s string) (n int) {
-	n, _ = strconv.Atoi(s)
-	return
 }

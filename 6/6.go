@@ -2,16 +2,12 @@ package main
 
 import (
 	"fmt"
+	"github.com/lillrurre/adventofcode-2023/util"
 	"math"
-	"os"
 	"regexp"
-	"strconv"
-	"strings"
 )
 
 func main() {
-	b, _ := os.ReadFile("input/6")
-
 	solve := func(durations []int, distances []int) int {
 		res := 1
 		for i, dur := range durations {
@@ -25,8 +21,11 @@ func main() {
 		return res
 	}
 
-	durations, distances := parse(string(b))
-	fmt.Printf("[1] Result: %d\n", solve(durations, distances))
+	input := util.FileAsStringArr(6, "\n")
+	durations, distances := parse(input)
+	util.Run(1, func() any {
+		return solve(durations, distances)
+	})
 
 	distance := ""
 	for _, d := range distances {
@@ -37,33 +36,29 @@ func main() {
 		duration = fmt.Sprintf("%s%d", duration, d)
 	}
 
-	fmt.Printf("[2] Result: %d\n", solve([]int{atoi(duration)}, []int{atoi(distance)}))
+	util.Run(2, func() any {
+		return solve([]int{util.Atoi(duration)}, []int{util.Atoi(distance)})
+	})
 
-	// Test ideal solution with quadratic formula for part 2
-	fmt.Printf("[3] Result: %d\n", idealSolution(atoi(duration), atoi(distance)))
+	util.Run(3, func() any {
+		return idealSolution(util.Atoi(duration), util.Atoi(distance))
+	})
 }
 
-func parse(input string) ([]int, []int) {
-
-	lines := strings.Split(input, "\n")
+func parse(input []string) ([]int, []int) {
 
 	re := regexp.MustCompile(`\d+`)
 	duration := make([]int, 0)
-	for _, match := range re.FindAllString(lines[0], -1) {
-		duration = append(duration, atoi(match))
+	for _, match := range re.FindAllString(input[0], -1) {
+		duration = append(duration, util.Atoi(match))
 	}
 
 	distance := make([]int, 0)
-	for _, match := range re.FindAllString(lines[1], -1) {
-		distance = append(distance, atoi(match))
+	for _, match := range re.FindAllString(input[1], -1) {
+		distance = append(distance, util.Atoi(match))
 	}
 
 	return duration, distance
-}
-
-func atoi(s string) (n int) {
-	n, _ = strconv.Atoi(s)
-	return
 }
 
 // After reading the AOC reddit thread for day 6:
