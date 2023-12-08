@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 	"regexp"
-	"strconv"
+	"slices"
 )
 
 func main() {
@@ -43,25 +43,13 @@ func main() {
 	fmt.Println(part2(directions, network))
 }
 
-func part1(directions []int, network map[string][2]string, start string, targets ...string) int {
-	moves := 0
-	current := start
-	for !contains(targets, current) {
+func part1(directions []int, network map[string][2]string, current string, targets ...string) (moves int) {
+	for !slices.Contains(targets, current) {
 		moves++
 		move := directions[(moves-1)%len(directions)]
-		next := network[current][move-1]
-		current = next
+		current = network[current][move-1]
 	}
 	return moves
-}
-
-func contains(arr []string, item string) bool {
-	for _, elem := range arr {
-		if elem == item {
-			return true
-		}
-	}
-	return false
 }
 
 func part2(directions []int, network map[string][2]string) int {
@@ -76,12 +64,11 @@ func part2(directions []int, network map[string][2]string) int {
 		}
 	}
 
-	periods := make([]int, len(starts))
+	moves := make([]int, len(starts))
 	for i, start := range starts {
-		periods[i] = part1(directions, network, start, targets...)
+		moves[i] = part1(directions, network, start, targets...)
 	}
-
-	return lcm(periods)
+	return lcm(moves)
 }
 
 func lcm(numbers []int) int {
@@ -97,9 +84,4 @@ func gcd(a, b int) int {
 		a, b = b, a%b
 	}
 	return a
-}
-
-func atoi(s string) (n int) {
-	n, _ = strconv.Atoi(s)
-	return
 }
