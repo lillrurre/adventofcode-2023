@@ -29,9 +29,7 @@ func main() {
 		return sum
 	}
 
-	util.Run(1, func() any {
-		return solve()
-	})
+	util.Run(1, solve)
 
 	input = strings.ReplaceAll(input, "one", "o1e")
 	input = strings.ReplaceAll(input, "two", "t2o")
@@ -43,8 +41,6 @@ func main() {
 	input = strings.ReplaceAll(input, "eight", "e8t")
 	input = strings.ReplaceAll(input, "nine", "n9e")
 
-	util.Run(2, func() any {
-		return solve()
-	})
+	util.Run(2, solve)
 
 }

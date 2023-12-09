@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/lillrurre/adventofcode-2023/util"
 	"regexp"
 	"strings"
@@ -27,25 +26,26 @@ func main() {
 		}
 	}
 
-	sum1, sum2 := 0, 0
-	for symPoint, sym := range syms {
-		var prev int
-		for numPoint, num := range nums {
-			if !numPoint.Adjacent(symPoint, util.AdjacentWithDiagonals, num) {
-				continue
+	util.RunBoth(func() (int, int) {
+		sum1, sum2 := 0, 0
+		for symPoint, sym := range syms {
+			var prev int
+			for numPoint, num := range nums {
+				if !numPoint.Adjacent(symPoint, util.AdjacentWithDiagonals, num) {
+					continue
+				}
+				sum1 += num
+				if sym != "*" {
+					continue
+				}
+				if prev == 0 {
+					prev = num
+					continue
+				}
+				sum2 += prev * num
 			}
-			sum1 += num
-			if sym != "*" {
-				continue
-			}
-			if prev == 0 {
-				prev = num
-				continue
-			}
-			sum2 += prev * num
+			prev = 0
 		}
-		prev = 0
-	}
-	fmt.Printf("[1] Result: %d\n", sum1)
-	fmt.Printf("[2] Result: %d\n", sum2)
+		return sum1, sum2
+	})
 }

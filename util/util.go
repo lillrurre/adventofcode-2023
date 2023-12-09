@@ -42,10 +42,17 @@ func FileAsScanner(day int) *bufio.Scanner {
 	return bufio.NewScanner(f)
 }
 
-func Run(part int, fn func() any) {
+func Run[T any](part int, fn func() T) {
 	start := time.Now()
 	res := fn()
 	fmt.Printf("[%d] Duration: %d µs | Result: %v\n", part, time.Since(start).Microseconds(), res)
+}
+
+func RunBoth[T any, V any](fn func() (T, V)) {
+	start := time.Now()
+	p1, p2 := fn()
+	fmt.Printf("[1] Duration: %d µs | Result: %v\n", time.Since(start).Microseconds(), p1)
+	fmt.Printf("[2] Duration: %d µs | Result: %v\n", time.Since(start).Microseconds(), p2)
 }
 
 func StrsToIntSlice(nums ...string) (ints []int) {
