@@ -10,35 +10,22 @@ import (
 )
 
 func FileAsString(day int) string {
-	b, err := os.ReadFile(fmt.Sprintf("input/%d", day))
-	if err != nil {
-		panic(err)
-	}
+	b := CheckErr(os.ReadFile(fmt.Sprintf("input/%d", day)))
 	return string(b)
 }
 
 func FileAsStringArr(day int, separator string) []string {
-	b, err := os.ReadFile(fmt.Sprintf("input/%d", day))
-	if err != nil {
-		panic(err)
-	}
-
+	b := CheckErr(os.ReadFile(fmt.Sprintf("input/%d", day)))
 	return strings.Split(string(b), separator)
 }
 
 func FileAsBytes(day int) []byte {
-	b, err := os.ReadFile(fmt.Sprintf("input/%d", day))
-	if err != nil {
-		panic(err)
-	}
+	b := CheckErr(os.ReadFile(fmt.Sprintf("input/%d", day)))
 	return b
 }
 
 func FileAsScanner(day int) *bufio.Scanner {
-	f, err := os.Open(fmt.Sprintf("input/%d", day))
-	if err != nil {
-		panic(err)
-	}
+	f := CheckErr(os.Open(fmt.Sprintf("input/%d", day)))
 	return bufio.NewScanner(f)
 }
 
@@ -72,8 +59,7 @@ func ValuesToNum[T string | rune](strs ...T) (n int) {
 
 // Atoi is strconv.Atoi but without returning errors.
 func Atoi(s string) (n int) {
-	n, _ = strconv.Atoi(s)
-	return
+	return CheckErr(strconv.Atoi(s))
 }
 
 // LCM (lcm or least common multiple) returns the least common multiple of the provided integers.
@@ -161,8 +147,7 @@ func (p *Point) adjacentWithOffset(offset int, other Point, adj []Point) bool {
 
 // Add returns the sum of two points
 func (p *Point) Add(other Point) Point {
-	r := Point{p.X + other.X, p.Y + other.Y}
-	return r
+	return Point{p.X + other.X, p.Y + other.Y}
 }
 
 // Scale multiplies the point by a scalar
@@ -185,6 +170,10 @@ func (p *Point) Manhattan() int {
 	return Abs(p.X) + Abs(p.Y)
 }
 
+func (p *Point) Equals(other Point) bool {
+	return p.X == other.X && p.Y == other.Y
+}
+
 func Abs(x int) int {
 	if x < 0 {
 		return -x
@@ -192,13 +181,9 @@ func Abs(x int) int {
 	return x
 }
 
-// CheckErr panics if err != nil
-func CheckErr(err error, msg ...string) {
-	if err == nil {
-		return
+func CheckErr[T any](t T, err error) T {
+	if err != nil {
+		panic(err)
 	}
-	if len(msg) == 0 {
-		msg = append(msg, "error")
-	}
-	panic(fmt.Errorf("%s: %v", msg, err))
+	return t
 }
