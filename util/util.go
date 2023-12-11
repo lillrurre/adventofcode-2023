@@ -170,6 +170,10 @@ func (p *Point) Manhattan() int {
 	return Abs(p.X) + Abs(p.Y)
 }
 
+func (p *Point) ManhattanDistance(other Point) int {
+	return Abs(p.X-other.X) + Abs(p.Y-other.Y)
+}
+
 func (p *Point) Equals(other Point) bool {
 	return p.X == other.X && p.Y == other.Y
 }
