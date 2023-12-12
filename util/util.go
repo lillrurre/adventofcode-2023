@@ -6,6 +6,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -32,14 +33,16 @@ func FileAsScanner(day int) *bufio.Scanner {
 func Run[T any](part int, fn func() T) {
 	start := time.Now()
 	res := fn()
-	fmt.Printf("[%d] Duration: %d µs | Result: %v\n", part, time.Since(start).Microseconds(), res)
+	elapsed := time.Since(start).Seconds()
+	fmt.Printf("[%d] Duration: %f seconds | Result: %v\n", part, elapsed, res)
 }
 
 func RunBoth[T any, V any](fn func() (T, V)) {
 	start := time.Now()
 	p1, p2 := fn()
-	fmt.Printf("[1] Duration: %d µs | Result: %v\n", time.Since(start).Microseconds(), p1)
-	fmt.Printf("[2] Duration: %d µs | Result: %v\n", time.Since(start).Microseconds(), p2)
+	elapsed := time.Since(start).Seconds()
+	fmt.Printf("[1] Duration: %f seconds | Result: %v\n", elapsed, p1)
+	fmt.Printf("[2] Duration: %f seconds | Result: %v\n", elapsed, p2)
 }
 
 func StrsToIntSlice(nums ...string) (ints []int) {
@@ -190,4 +193,29 @@ func CheckErr[T any](t T, err error) T {
 		panic(err)
 	}
 	return t
+}
+
+type Cache[K comparable, V any] struct {
+	mut   sync.RWMutex
+	cache map[K]V
+}
+
+func NewCache[K comparable, V any]() *Cache[K, V] {
+	return &Cache[K, V]{
+		mut:   sync.RWMutex{},
+		cache: make(map[K]V),
+	}
+}
+
+func (c *Cache[K, V]) Get(key K) (val V, ok bool) {
+	c.mut.RLock()
+	defer c.mut.RUnlock()
+	val, ok = c.cache[key]
+	return val, ok
+}
+
+func (c *Cache[K, V]) Set(key K, val V) {
+	c.mut.Lock()
+	defer c.mut.Unlock()
+	c.cache[key] = val
 }
