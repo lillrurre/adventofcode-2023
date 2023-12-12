@@ -25,7 +25,7 @@ fn main() {
 fn solve(record: &str, group: &[u8]) -> u32 {
     return match (record.is_empty(), group.is_empty()) {
         (true, true) => 1,
-        (false, true) => if record.contains("#") { 0 } else { 1 },
+        (false, true) => if record.contains('#') { 0 } else { 1 },
         (true, false) => 0,
         _ => {
             let first_spring = record.chars().next().unwrap().to_ascii_lowercase();
