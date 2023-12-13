@@ -8,6 +8,7 @@ import (
 	"strings"
 	"sync"
 	"time"
+	"unicode/utf8"
 )
 
 func FileAsString(day int) string {
@@ -218,4 +219,15 @@ func (c *Cache[K, V]) Set(key K, val V) {
 	c.mut.Lock()
 	defer c.mut.Unlock()
 	c.cache[key] = val
+}
+
+func ReverseStr(s string) string {
+	size := len(s)
+	buf := make([]byte, size)
+	for start := 0; start < size; {
+		r, n := utf8.DecodeRuneInString(s[start:])
+		start += n
+		utf8.EncodeRune(buf[size-start:], r)
+	}
+	return string(buf)
 }
