@@ -231,3 +231,21 @@ func ReverseStr(s string) string {
 	}
 	return string(buf)
 }
+
+func FlipGrid[T any](a [][]T, times ...int) (b [][]T) {
+	rows, cols := len(a), len(a[0])
+	b = make([][]T, cols)
+	for i := range b {
+		b[i] = make([]T, rows)
+	}
+	for i := 0; i < rows; i++ {
+		for j := 0; j < cols; j++ {
+			b[j][rows-i-1] = a[i][j]
+		}
+	}
+	t := times[0]
+	if t > 1 {
+		return FlipGrid(b, t-1)
+	}
+	return b
+}
