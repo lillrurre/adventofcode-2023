@@ -243,9 +243,21 @@ func FlipGrid[T any](a [][]T, times ...int) (b [][]T) {
 			b[j][rows-i-1] = a[i][j]
 		}
 	}
+	if times == nil {
+		return b
+	}
 	t := times[0]
 	if t > 1 {
 		return FlipGrid(b, t-1)
 	}
 	return b
+}
+
+func SliceCount[T comparable](s []T, sub T) (sum int) {
+	for _, v := range s {
+		if v == sub {
+			sum++
+		}
+	}
+	return sum
 }
