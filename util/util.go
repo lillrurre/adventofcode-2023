@@ -12,33 +12,33 @@ import (
 )
 
 func FileAsString(day int) string {
-	b := CheckErr(os.ReadFile(fmt.Sprintf("input/%d", day)))
+	b := CheckErr(os.ReadFile(fmt.Sprintf("%d/input.txt", day)))
 	return string(b)
 }
 
 func FileAsStringArr(day int, separator string) []string {
-	b := CheckErr(os.ReadFile(fmt.Sprintf("input/%d", day)))
+	b := CheckErr(os.ReadFile(fmt.Sprintf("%d/input.txt", day)))
 	return strings.Split(string(b), separator)
 }
 
 func FileAsBytes(day int) []byte {
-	b := CheckErr(os.ReadFile(fmt.Sprintf("input/%d", day)))
+	b := CheckErr(os.ReadFile(fmt.Sprintf("%d/input.txt", day)))
 	return b
 }
 
 func FileAsScanner(day int) *bufio.Scanner {
-	f := CheckErr(os.Open(fmt.Sprintf("input/%d", day)))
+	f := CheckErr(os.Open(fmt.Sprintf("%d/input.txt", day)))
 	return bufio.NewScanner(f)
 }
 
-func Run[T any](part int, fn func() T) {
+func Run[T any](part int, fn func() (sum T)) {
 	start := time.Now()
 	res := fn()
 	elapsed := time.Since(start).Seconds()
 	fmt.Printf("[%d] Duration: %f seconds | Result: %v\n", part, elapsed, res)
 }
 
-func RunBoth[T any, V any](fn func() (T, V)) {
+func RunBoth[T any, V any](fn func() (p1 T, p2 V)) {
 	start := time.Now()
 	p1, p2 := fn()
 	elapsed := time.Since(start).Seconds()

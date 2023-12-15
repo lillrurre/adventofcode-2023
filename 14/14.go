@@ -15,31 +15,33 @@ const (
 
 func main() {
 	input := util.FileAsStringArr(14, "\n")
+	util.Run(1, func() int { return part1(input) })
+	util.Run(2, func() int { return part2(input) })
+}
 
-	util.Run(1, func() int {
-		grid := make([][]rock, 0)
-		for _, line := range input {
-			grid = append(grid, []rock(line))
-		}
-		grid = tilt(grid)
-		sum := 0
-		for i, line := range grid {
-			sum += util.SliceCount(line, round) * (len(line) - i)
-		}
-		return sum
-	})
+func part1(input []string) int {
+	grid := make([][]rock, 0)
+	for _, line := range input {
+		grid = append(grid, []rock(line))
+	}
+	grid = tilt(grid)
+	sum := 0
+	for i, line := range grid {
+		sum += util.SliceCount(line, round) * (len(line) - i)
+	}
+	return sum
+}
 
-	util.Run(2, func() int {
-		grid := make([][]rock, 0)
-		for _, line := range input {
-			grid = append(grid, []rock(line))
-		}
-		sum := 0
-		for i, line := range cycleLoop(grid) {
-			sum += util.SliceCount(line, round) * (len(line) - i)
-		}
-		return sum
-	})
+func part2(input []string) int {
+	grid := make([][]rock, 0)
+	for _, line := range input {
+		grid = append(grid, []rock(line))
+	}
+	sum := 0
+	for i, line := range cycleLoop(grid) {
+		sum += util.SliceCount(line, round) * (len(line) - i)
+	}
+	return sum
 }
 
 func cycleLoop(grid [][]rock) [][]rock {
