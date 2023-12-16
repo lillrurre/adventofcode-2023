@@ -17,24 +17,17 @@ const (
 
 func main() {
 	util.SwitchPointPoles()
-	util.Run(1, func() (sum int) { return part1(util.FileAsStringArr(16, "\n")) })
-	util.Run(2, func() (sum int) { return part2(util.FileAsStringArr(16, "\n")) })
+	grid := util.StrsToGrid[tile](util.FileAsStringArr(16, "\n")...)
+	util.Run(1, func() (sum int) { return part1(grid) })
+	util.Run(2, func() (sum int) { return part2(grid) })
 }
 
-func part1(input []string) (sum int) {
-	grid := make([][]tile, 0)
-	for _, line := range input {
-		grid = append(grid, []tile(line))
-	}
+func part1(grid [][]tile) (sum int) {
 	m := move(grid, util.Point{}, util.East, make(map[util.Point][]util.Point))
 	return len(m)
 }
 
-func part2(input []string) (sum int) {
-	grid := make([][]tile, 0)
-	for _, line := range input {
-		grid = append(grid, []tile(line))
-	}
+func part2(grid [][]tile) (sum int) {
 	for i := range grid {
 		m1 := move(grid, util.Point{Y: i}, util.East, make(map[util.Point][]util.Point))
 		m2 := move(grid, util.Point{X: len(grid[0]) - 1, Y: i}, util.West, make(map[util.Point][]util.Point))
