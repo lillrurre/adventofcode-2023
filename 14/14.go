@@ -20,10 +20,7 @@ func main() {
 }
 
 func part1(input []string) int {
-	grid := make([][]rock, 0)
-	for _, line := range input {
-		grid = append(grid, []rock(line))
-	}
+	grid := util.StrsToGrid[rock](input...)
 	grid = tilt(grid)
 	sum := 0
 	for i, line := range grid {
@@ -33,10 +30,7 @@ func part1(input []string) int {
 }
 
 func part2(input []string) int {
-	grid := make([][]rock, 0)
-	for _, line := range input {
-		grid = append(grid, []rock(line))
-	}
+	grid := util.StrsToGrid[rock](input...)
 	sum := 0
 	for i, line := range cycleLoop(grid) {
 		sum += util.SliceCount(line, round) * (len(line) - i)
