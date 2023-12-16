@@ -261,3 +261,9 @@ func SliceCount[T comparable](s []T, sub T) (sum int) {
 	}
 	return sum
 }
+
+// SwitchPointPoles switches North and South directions
+// Remember to use with care ;)
+func SwitchPointPoles() {
+	North, South = South, North
+}
