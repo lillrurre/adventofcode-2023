@@ -18,7 +18,7 @@ const (
 func main() {
 	util.SwitchPointPoles()
 	util.Run(1, func() (sum int) { return part1(util.FileAsStringArr(16, "\n")) })
-	util.Run(1, func() (sum int) { return part2(util.FileAsStringArr(16, "\n")) })
+	util.Run(2, func() (sum int) { return part2(util.FileAsStringArr(16, "\n")) })
 }
 
 func part1(input []string) (sum int) {
