@@ -112,6 +112,16 @@ func StrsToGrid[T constraints.Signed | constraints.Unsigned](strs ...string) (gr
 	return grid
 }
 
+func StrsToPointIntGrid(strs ...string) (grid map[Point]int) {
+	grid = make(map[Point]int)
+	for y, line := range strs {
+		for x, r := range line {
+			grid[Point{X: x, Y: y}] = int(r - '0')
+		}
+	}
+	return grid
+}
+
 // END: Slices
 
 // BEGIN: Math
@@ -180,6 +190,16 @@ var AdjacentWithDiagonals = []Point{North, South, East, West, NorthWest, NorthEa
 
 var Adjacent = []Point{North, South, East, West}
 
+var bound = Point{}
+
+func SetBounds(b Point) {
+	bound = b
+}
+
+func (p *Point) InBounds() bool {
+	return p.X > 0 && p.X <= bound.X && p.Y > 0 && p.Y <= bound.Y
+}
+
 // Adjacent returns true if the coordinate is adjacent to the other coordinate.
 // The offset allows the adjacent coordinate to be offset on the x-axis with the given size.
 func (p *Point) Adjacent(other Point, adj []Point, offset ...int) bool {
@@ -221,13 +241,48 @@ func (p *Point) Scale(factor int) Point {
 }
 
 // Right turn point right 90 degrees
-func (p *Point) Right() {
-	p.X -= p.X
+func (p *Point) Right() Point {
+	switch *p {
+	case North:
+		return East
+	case West:
+		return North
+	case South:
+		return West
+	case East:
+		return South
+	}
+	return *p
 }
 
 // Left turns the point left 90 degrees
-func (p *Point) Left() {
-	p.Y -= p.Y
+func (p *Point) Left() Point {
+	switch *p {
+	case North:
+		return West
+	case West:
+		return South
+	case South:
+		return East
+	case East:
+		return North
+	}
+	return *p
+}
+
+func (p *Point) MoveLeft(cur Point) Point {
+	return p.Move(cur.Left())
+}
+
+func (p *Point) MoveRight(cur Point) Point {
+	return p.Move(cur.Right())
+}
+
+func (p *Point) Move(dir Point) Point {
+	return Point{
+		X: p.X + dir.X,
+		Y: p.Y + dir.Y,
+	}
 }
 
 // Manhattan returns the manhattan magnitude |x|+|y|
@@ -304,6 +359,125 @@ func Atoi(s string) (n int) {
 }
 
 // END: String
+
+// BEGIN: PriorityQueue
+
+type priorityQueueItem[T any, P constraints.Ordered] struct {
+	value    T
+	priority P
+}
+
+type PriorityQueue[T any, P constraints.Ordered] struct {
+	mut         sync.RWMutex
+	items       []*priorityQueueItem[T, P]
+	count       uint
+	compareFunc func(a, b P) bool
+}
+
+func NewPriorityQueue[T any, P constraints.Ordered](compareFunc func(a, b P) bool) *PriorityQueue[T, P] {
+	items := make([]*priorityQueueItem[T, P], 1)
+	items[0] = nil
+	return &PriorityQueue[T, P]{
+		mut:         sync.RWMutex{},
+		items:       items,
+		count:       0,
+		compareFunc: compareFunc,
+	}
+}
+
+func (pq *PriorityQueue[T, P]) Push(value T, priority P) {
+	pq.mut.Lock()
+	defer pq.mut.Unlock()
+	pq.count++
+	pq.items = append(pq.items, newPriorityQueueItem[T, P](value, priority))
+	pq.swim(pq.size())
+}
+
+func (pq *PriorityQueue[T, P]) Pop() (value T, priority P, ok bool) {
+	pq.mut.Lock()
+	defer pq.mut.Unlock()
+	if pq.size() < 1 {
+		return value, priority, false
+	}
+	m := pq.items[1]
+	pq.exchange(1, pq.size())
+	pq.items = pq.items[:pq.size()]
+	pq.count--
+	pq.sink(1)
+
+	return m.value, m.priority, true
+}
+
+func (pq *PriorityQueue[T, P]) Head() (value T, priority P, ok bool) {
+	pq.mut.RLock()
+	defer pq.mut.RUnlock()
+	if pq.size() < 1 {
+		return value, priority, false
+	}
+	m := pq.items[1]
+	return m.value, m.priority, true
+}
+
+func (pq *PriorityQueue[T, P]) swim(k uint) {
+	for k > 1 && pq.less(k/2, k) {
+		pq.exchange(k, k/2)
+		k /= 2
+	}
+}
+
+func (pq *PriorityQueue[T, P]) sink(k uint) {
+	for 2*k <= pq.count {
+		j := 2 * k
+		if j < pq.size() && pq.less(j, j+1) {
+			j++
+		}
+		if !pq.less(k, j) {
+			break
+		}
+		pq.exchange(k, j)
+		k = j
+	}
+}
+
+func (pq *PriorityQueue[T, P]) size() uint {
+	return pq.count
+}
+
+func (pq *PriorityQueue[T, P]) less(i, j uint) bool {
+	return pq.compareFunc(pq.items[j].priority, pq.items[i].priority)
+}
+
+func (pq *PriorityQueue[T, P]) exchange(i, j uint) {
+	pq.items[i], pq.items[j] = pq.items[j], pq.items[i]
+}
+
+func (pq *PriorityQueue[T, P]) IsEmpty() bool {
+	pq.mut.RLock()
+	defer pq.mut.RUnlock()
+	return pq.size() == 0
+}
+
+func PriorityMax[T constraints.Ordered](a, b T) bool {
+	return a > b
+}
+
+func PriorityMin[T constraints.Ordered](a, b T) bool {
+	return a < b
+}
+
+func NewMaxPriorityQueue[T any, P constraints.Ordered]() *PriorityQueue[T, P] {
+	return NewPriorityQueue[T](PriorityMax[P])
+}
+
+func NewMinPriorityQueue[T any, P constraints.Ordered]() *PriorityQueue[T, P] {
+	return NewPriorityQueue[T](PriorityMin[P])
+}
+
+func newPriorityQueueItem[T any, P constraints.Ordered](value T, priority P) *priorityQueueItem[T, P] {
+	return &priorityQueueItem[T, P]{value: value, priority: priority}
+}
+
+// END: PriorityQueue
 
 func CheckErr[T any](t T, err error) T {
 	if err != nil {
