@@ -298,6 +298,13 @@ func (p *Point) Equals(other Point) bool {
 	return p.X == other.X && p.Y == other.Y
 }
 
+func (p *Point) Multiply(n int) Point {
+	return Point{
+		X: p.X * n,
+		Y: p.Y * n,
+	}
+}
+
 // SwitchPointPoles switches North and South directions.
 // Remember to use with care ;)
 func SwitchPointPoles() {
@@ -356,6 +363,14 @@ func Palindrome(s string) bool {
 // Atoi is strconv.Atoi but without returning errors.
 func Atoi(s string) (n int) {
 	return CheckErr(strconv.Atoi(s))
+}
+
+func ParseInt(s string, base int) (n int) {
+	i, err := strconv.ParseInt(s, base, strconv.IntSize)
+	if err != nil {
+		panic(err)
+	}
+	return int(i)
 }
 
 // END: String
@@ -478,6 +493,99 @@ func newPriorityQueueItem[T any, P constraints.Ordered](value T, priority P) *pr
 }
 
 // END: PriorityQueue
+
+// BEGIN: LinkedList
+
+type LinkedList[T any] struct {
+	mut   sync.RWMutex
+	first *T
+	last  *T
+	size  int
+}
+
+func NewLinkedList[T any]() *LinkedList[T] {
+	return &LinkedList[T]{mut: sync.RWMutex{}, size: 0}
+}
+
+func (l *LinkedList[T]) AddFirst(value T) {
+	l.mut.Lock()
+	defer l.mut.Unlock()
+	if l.size == 0 {
+		l.first = &value
+		l.last = &value
+	} else {
+		l.first = &value
+	}
+	l.size++
+}
+
+func (l *LinkedList[T]) AddLast(value T) {
+	l.mut.Lock()
+	defer l.mut.Unlock()
+	if l.size == 0 {
+		l.first = &value
+		l.last = &value
+	} else {
+		l.last = &value
+	}
+	l.size++
+}
+
+func (l *LinkedList[T]) RemoveFirst() (value T, ok bool) {
+	l.mut.Lock()
+	defer l.mut.Unlock()
+	if l.size == 0 {
+		return value, false
+	}
+	value = *l.first
+	l.first = l.last
+	l.size--
+	return value, true
+}
+
+func (l *LinkedList[T]) RemoveLast() (value T, ok bool) {
+	l.mut.Lock()
+	defer l.mut.Unlock()
+	if l.size == 0 {
+		return value, false
+	}
+	value = *l.last
+	l.last = l.first
+	l.size--
+	return value, true
+}
+
+func (l *LinkedList[T]) First() (value T, ok bool) {
+	l.mut.RLock()
+	defer l.mut.RUnlock()
+	if l.size == 0 {
+		return value, false
+	}
+	return *l.first, true
+}
+
+func (l *LinkedList[T]) Last() (value T, ok bool) {
+	l.mut.RLock()
+	defer l.mut.RUnlock()
+	if l.size == 0 {
+		return value, false
+	}
+	return *l.last, true
+}
+
+func (l *LinkedList[T]) Size() int {
+	l.mut.RLock()
+	defer l.mut.RUnlock()
+	return l.size
+}
+
+func (l *LinkedList[T]) IsEmpty() bool {
+	l.mut.RLock()
+	defer l.mut.RUnlock()
+	return l.size == 0
+}
+
+// END: LinkedList
 
 func CheckErr[T any](t T, err error) T {
 	if err != nil {
