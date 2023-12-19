@@ -122,6 +122,13 @@ func StrsToPointIntGrid(strs ...string) (grid map[Point]int) {
 	return grid
 }
 
+func SliceSum[T constraints.Ordered](vals ...T) (sum T) {
+	for _, v := range vals {
+		sum += v
+	}
+	return sum
+}
+
 // END: Slices
 
 // BEGIN: Math
