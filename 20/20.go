@@ -59,10 +59,9 @@ func part1(in []string) int {
 
 func part2(in []string) int {
 	modules, rxMap, rxDest := parse(in)
-	pulses := make(map[pulse]int)
 	count := 1
 	for slices.Contains(maps.Values(rxMap), 0) {
-		sendPulseTwo(pulses, modules, []input{{pulse: low, dest: "broadcaster"}}, rxMap, rxDest, count)
+		sendPulseTwo(modules, []input{{pulse: low, dest: "broadcaster"}}, rxMap, rxDest, count)
 		count++
 	}
 	return util.LCM(maps.Values(rxMap)...)
@@ -121,16 +120,15 @@ func sendPulse(pulses map[pulse]int, modules map[string]propagator, inputs []inp
 	}
 }
 
-func sendPulseTwo(pulses map[pulse]int, modules map[string]propagator, inputs []input, rxMap map[string]int, rxDest string, count int) {
+func sendPulseTwo(modules map[string]propagator, inputs []input, rxMap map[string]int, rxDest string, count int) {
 	next := make([]input, 0)
 	for _, in := range inputs {
-		pulses[in.pulse]++
 		if m, ok := modules[in.dest]; ok {
 			next = append(next, m.sendPulseTwo(in, rxMap, rxDest, count)...)
 		}
 	}
 	if len(next) != 0 {
-		sendPulseTwo(pulses, modules, next, rxMap, rxDest, count)
+		sendPulseTwo(modules, next, rxMap, rxDest, count)
 	}
 }
 
