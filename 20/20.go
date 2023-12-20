@@ -7,15 +7,6 @@ import (
 	"strings"
 )
 
-func main() {
-	util.Run(1, func() (sum int) {
-		return part1(util.FileAsStringArr(20, "\n"))
-	})
-	util.Run(2, func() (sum int) {
-		return part2(util.FileAsStringArr(20, "\n"))
-	})
-}
-
 type propagator interface {
 	sendPulse(in input) (next []input)
 	sendPulseTwo(in input, rxMap map[string]int, rxDest string, count int) (next []input)
@@ -46,6 +37,15 @@ type input struct {
 	pulse pulse
 	src   string
 	dest  string
+}
+
+func main() {
+	util.Run(1, func() (sum int) {
+		return part1(util.FileAsStringArr(20, "\n"))
+	})
+	util.Run(2, func() (sum int) {
+		return part2(util.FileAsStringArr(20, "\n"))
+	})
 }
 
 func part1(in []string) int {
