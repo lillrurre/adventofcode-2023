@@ -320,6 +320,30 @@ func SwitchPointPoles() {
 
 // END: Point
 
+// BEGIN: Cube
+
+type Cube struct {
+	X, Y, Z int
+}
+
+func NewCube(x, y, z int) Cube {
+	return Cube{
+		X: x,
+		Y: y,
+		Z: z,
+	}
+}
+
+func CubeFromNums(n [3]int) Cube {
+	return Cube{
+		X: n[0],
+		Y: n[1],
+		Z: n[2],
+	}
+}
+
+// END: Cube
+
 // BEGIN: Cache
 
 // Cache is a simple and safe map[K]V
