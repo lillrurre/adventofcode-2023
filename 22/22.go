@@ -19,7 +19,6 @@ func part1(input []string) (sum int) {
 	bricks := parse(input)
 	ground := bricks[0].start.Z // ground is the lowest a brick can fall
 	drop(bricks, ground)
-
 	for i := 0; i < len(bricks); i++ {
 		if supported(remove(bricks, i), ground) {
 			sum++
@@ -38,8 +37,8 @@ func part2(input []string) (sum int) {
 	return sum
 }
 
-func collision(i int, b brick, bricks []brick) bool {
-	for j := i - 1; j > -1; j-- {
+func collision(index int, b brick, bricks []brick) bool {
+	for j := index - 1; j > -1; j-- {
 		if collide(b, bricks[j]) {
 			return true
 		}
@@ -80,11 +79,7 @@ func drop(bricks []brick, ground int) {
 // supported tries to move a brick down and returns true if the brick cannot move.
 func supported(bricks []brick, ground int) bool {
 	for i, b := range bricks {
-		for b.start.Z > ground {
-			b = b.down()
-			if collision(i, b, bricks) {
-				break
-			}
+		if b.start.Z > ground && !collision(i, b.down(), bricks) {
 			return false
 		}
 	}
@@ -94,13 +89,9 @@ func supported(bricks []brick, ground int) bool {
 // chain returns the sum of moved bricks when a brick is removed.
 func chain(bricks []brick, ground int) (reaction int) {
 	for i, b := range bricks {
-		for b.start.Z > ground {
-			b = b.down()
-			if !collision(i, b, bricks) {
-				reaction++
-				bricks[i] = b
-			}
-			break
+		if b.start.Z > ground && !collision(i, b.down(), bricks) {
+			reaction++
+			bricks[i] = b.down()
 		}
 	}
 	return reaction
