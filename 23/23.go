@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/lillrurre/adventofcode-2023/util"
 	"maps"
 	"slices"
@@ -31,16 +30,19 @@ type node struct {
 
 func main() {
 	util.Run(1, func() (sum int) { return part1(util.FileAsStringArr(23, "\n")) })
-	// util.Run(2, func() (sum int) { return part2(util.FileAsStringArr(23, "\n")) })
+	util.Run(2, func() (sum int) { return part2(util.FileAsStringArr(23, "\n")) })
 }
 
 func part1(input []string) (sum int) {
 	grid, start, end := parse(input)
+	return solve(grid, start.Move(util.North), end, map[util.Point]bool{start: true}, 1) - 1
+}
+
+func part2(input []string) (sum int) {
+	grid, start, end := parse(input)
 	con := getConnections(grid, start, end)
 	paths := getPaths(grid, con, true)
-	n := findLongestPath(grid, paths, start, end, 0, map[util.Point]bool{start: true})
-	fmt.Println(n)
-	return solve(grid, start.Move(util.North), end, map[util.Point]bool{start: true}, 1) - 1
+	return findLongestPath(grid, paths, start, end, 0, map[util.Point]bool{start: true})
 }
 
 func solve(grid [][]rune, pos, end util.Point, seen map[util.Point]bool, sum int) int {
