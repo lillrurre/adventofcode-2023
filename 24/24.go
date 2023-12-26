@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/lillrurre/adventofcode-2023/util"
 	"strings"
 )
@@ -47,21 +48,13 @@ func intersectionsInArea(hailstones []hailstone, a, b float64) (sum int) {
 	// Check if the intersections are valid - in the future, not the past
 	valid := func(x, y float64, a, b hailstone) bool {
 		switch {
-		case a.xv > 0 && a.x > x:
+		case a.xv > 0 && a.x > x, a.xv < 0 && a.x < x:
 			return false
-		case a.xv < 0 && a.x < x:
+		case b.xv > 0 && b.x > x, b.xv < 0 && b.x < x:
 			return false
-		case b.xv > 0 && b.x > x:
+		case a.yv > 0 && a.y > y, a.yv < 0 && a.y < y:
 			return false
-		case b.xv < 0 && b.x < x:
-			return false
-		case a.yv > 0 && a.y > y:
-			return false
-		case a.yv < 0 && a.y < y:
-			return false
-		case b.yv > 0 && b.y > y:
-			return false
-		case b.yv < 0 && b.y < y:
+		case b.yv > 0 && b.y > y, b.yv < 0 && b.y < y:
 			return false
 		}
 		return true
@@ -82,8 +75,44 @@ func intersectionsInArea(hailstones []hailstone, a, b float64) (sum int) {
 }
 
 func part2(input []string) (sum int) {
-	_ = parse(input)
-	return sum
+	hailstones := parse(input)
+	rock := throwRock(hailstones, 250.0)
+	fmt.Println(rock)
+	return int(rock.x + rock.y + rock.z)
+}
+
+func throwRock(hailstones []hailstone, rng float64) hailstone {
+	h1, h2 := hailstones[0], hailstones[1]
+	for xv := -rng; xv <= rng; xv++ { // will always work in the last iteration, x == 250 for the real data...so this loop could be removed
+		for yv := -rng; yv <= rng; yv++ {
+			for zv := -rng; zv <= rng; zv++ {
+
+				a := h1.xv - xv
+				b := h1.yv - yv
+				c := h2.xv - xv
+				d := h2.yv - yv
+
+				t := (d*(h2.x-h1.x) - c*(h2.y-h1.y)) / ((a * d) - (b * c))
+
+				x := h1.x + h1.xv*t - xv*t
+				y := h1.y + h1.yv*t - yv*t
+				z := h1.z + h1.zv*t - zv*t
+
+				found := true
+				for _, h := range hailstones {
+					u := (x - h.x) / (h.xv - xv)
+					if (x+u*xv != h.x+u*h.xv) || (y+u*yv != h.y+u*h.yv) || (z+u*zv != h.z+u*h.zv) {
+						found = false
+						break
+					}
+				}
+				if found {
+					return hailstone{x: x, xv: xv, y: y, yv: yv, z: z, zv: zv}
+				}
+			}
+		}
+	}
+	panic("lol")
 }
 
 func parse(input []string) (hailstones []hailstone) {
@@ -95,4 +124,8 @@ func parse(input []string) (hailstones []hailstone) {
 		})
 	}
 	return hailstones
+}
+
+func (h hailstone) String() string {
+	return fmt.Sprintf("Location=(%2.0f %2.0f %2.0f) Velocity=(%2.0f %2.0f %2.0f)", h.x, h.y, h.z, h.xv, h.yv, h.zv)
 }
